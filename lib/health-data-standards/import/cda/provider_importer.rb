@@ -33,7 +33,7 @@ module HealthDataStandards
           entity = performer.xpath(entity_path)
 
           cda_idents = []
-          entity.xpath("./cda:id").each do |cda_ident|
+          entity.xpath(".//cda:id").each do |cda_ident|
             ident_root = cda_ident['root']
             ident_extension = cda_ident['extension']
             cda_idents.push(CDAIdentifier.new(root: ident_root, extension: ident_extension)) if ident_root.present?
@@ -54,6 +54,7 @@ module HealthDataStandards
           
           # NIST sample C32s use different OID for NPI vs C83, support both
           npi                     = extract_data(entity, "./cda:id[@root='2.16.840.1.113883.4.6' or @root='2.16.840.1.113883.3.72.5.2']/@extension")
+          tin = extract_data(entity, ".//cda:id[@root='2.16.840.1.113883.4.2']/@extension")
           provider[:addresses] = performer.xpath("./cda:assignedEntity/cda:addr").try(:map) {|ae| import_address(ae)}
           provider[:telecoms] = performer.xpath("./cda:assignedEntity/cda:telecom").try(:map) {|te| import_telecom(te)}
           
