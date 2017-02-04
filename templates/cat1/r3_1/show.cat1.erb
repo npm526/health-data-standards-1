@@ -84,7 +84,7 @@
             <assignedAuthor>
               <!-- id extension="Cypress" root="2.16.840.1.113883.19.5"/ -->
               <!-- NPI -->
-              <!-- < % if cms_compatibility % >-->
+              <% # < % if cms_compatibility % > %>
               <% patient.provider_performances.each do |pp| -%>
                   <% pp.provider.cda_identifiers.each do |cda_id| -%>
                       <% if cda_id.root.eql?('2.16.840.1.113883.4.6') -%>
@@ -92,11 +92,9 @@
                       <% end -%>
                   <% end -%>
               <% end -%>
-              <!--
-          < % else % >-->
-              <!--<id extension="FakeNPI" root="2.16.840.1.113883.4.6"/>-->
-              <!--
-          < % end % >-->
+              <% #  < % else % > %>
+              <% # <id extension="FakeNPI" root="2.16.840.1.113883.4.6"/> %>
+              <% # < % end % > %>
               <addr>
                 <streetAddressLine>202 Burlington Rd.</streetAddressLine>
                 <city>Bedford</city>
