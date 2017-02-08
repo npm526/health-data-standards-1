@@ -17,7 +17,7 @@ module ThingWithCodes
   
   # Will return a single code and code set if one exists in the code sets that are
   # passed in. Returns a hash with a key of code and code_set if found, nil otherwise
-  def preferred_code(preferred_code_sets, codes_attribute=:codes, value_set_map=nil)
+  def preferred_code(preferred_code_sets=nil, codes_attribute=:codes, value_set_map=nil)
     codes_value = send(codes_attribute)
     preferred_code_sets = value_set_map ? (preferred_code_sets & value_set_map.collect{|cs| cs["set"]}) : preferred_code_sets
     matching_code_sets = preferred_code_sets & codes_value.keys 
