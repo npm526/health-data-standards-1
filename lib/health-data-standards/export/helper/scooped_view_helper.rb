@@ -111,8 +111,11 @@ module HealthDataStandards
             filtered_entries = handle_patient_expired(patient)
           when '2.16.840.1.113883.3.560.1.405'
             filtered_entries = handle_payer_information(patient)
-          else
-            entries.concat patient.entries_for_oid(data_criteria_oid)
+            else
+              # if we have a negation, then it is likely no section will have the right data_criteria_oid
+              # so add code_list_oid for negation processing
+            entries.concat patient.entries_for_oid(data_criteria_oid,
+                                                   data_criteria.negation ? data_criteria.code_list_id : nil)
 
             case data_criteria_oid
             when '2.16.840.1.113883.3.560.1.5'
