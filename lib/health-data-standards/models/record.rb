@@ -80,11 +80,19 @@ class Record
     Time.at(birthdate) < Time.now.years_ago(18)
   end
 
-  def entries_for_oid(oid)
+  # call with code_list_id if data_criteria.negation==true
+  def entries_for_oid(oid, code_list_id=nil)
     matching_entries_by_section = Sections.map do |section|
       section_entries = self.send(section)
       if section_entries.present?
-        section_entries.find_all { |entry| (entry.respond_to? :oid) ? entry.oid == oid : false}
+        res = section_entries.find_all { |entry| (entry.respond_to? :oid) ? entry.oid == oid : false}
+        if code_list_id.present? && res.length==0
+          section_entries.each do |ent|
+            code = ent.codes['NA_VALUESET']
+            res.push ent if code.present? && code.include?(code_list_id)
+          end
+        end
+        res
       else
         []
       end
