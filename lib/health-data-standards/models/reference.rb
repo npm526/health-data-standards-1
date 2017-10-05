@@ -20,4 +20,12 @@ class Reference
     end
     self.referenced_id = resolved_reference.id.to_s
   end
+
+  def resolve_reference_section_id
+    entry.record.entries.find do |e|
+      e.class.to_s == referenced_type &&
+      e._id.to_s == referenced_id
+    end
+  end
+
 end
