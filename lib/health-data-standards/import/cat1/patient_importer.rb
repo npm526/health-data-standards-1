@@ -99,8 +99,14 @@ module HealthDataStandards
           nrh.build_id_map(doc)
           @section_importers.each do |section, entry_packages|
             entry_packages.each do |entry_package|
-              record.send(section) << entry_package.package_entries(context, nrh)
-            end
+               begin
+                record.send(section) << entry_package.package_entries(context, nrh)
+               rescue Exception => e
+                errMsg = "Failed to import Section #{section} \n Reason For Failure #{e.message}"
+                raise SectionImportError, errMsg
+                return
+              end
+           end
           end
         end
 
@@ -137,6 +143,11 @@ module HealthDataStandards
             importer = EntryPackage.new(importer_class.new, hqmf_oid, status)
           end
           importer
+        end
+      end
+      class SectionImportError < StandardError
+        def initialize(msg="Error While Importing the Record")
+          super
         end
       end
     end
