@@ -25,11 +25,19 @@
             <low <%= value_or_null_flavor(entry.start_time) %>/>
             <high <%= value_or_null_flavor(entry.end_time) %>/>
         </effectiveTime>
-        <% if entry.administrationTiming.present?
-          period = entry.administrationTiming['period'] %>
-          <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
-            <period value="<%= period['value']%>" unit="<%= period['unit']%>"/>
-          </effectiveTime>
+        <% if entry.administrationTiming.present? %>
+          <% period = entry.administrationTiming['period'] %>
+          <% pval = period['value'] %>
+          <% punit = period['unit'] %>
+            <% if pval == 0 || punit.empty? %>
+                <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                <period nullFlavor="NA"/>
+                </effectiveTime>
+             <% else %>
+              <effectiveTime xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+              <period value="<%= period['value']%>" unit="<%= period['unit']%>"/>
+              </effectiveTime>   
+            <% end %>
         <% end %>
         <% if entry.route.present? -%>
         <!-- Attribute: route -->
