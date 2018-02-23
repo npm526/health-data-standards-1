@@ -38,9 +38,9 @@ module HealthDataStandards
           medication.type_of_medication = extract_code(entry_element, @type_of_med_xpath, 'SNOMED-CT') if @type_of_med_xpath
           medication.indication = extract_code(entry_element, @indication_xpath, 'SNOMED-CT')
           medication.vehicle = extract_code(entry_element, @vehicle_xpath, 'SNOMED-CT')
-
-          medication.allowed_administrations = extract_scalar(entry_element, "./cda:repeatNumber").value unless extract_scalar(entry_element, "./cda:repeatNumber").nil?
-
+          
+          aadmin_num = (entry_element.at_xpath("./cda:repeatNumber")['value']) unless entry_element.at_xpath("./cda:repeatNumber").nil?
+          medication.allowed_administrations = aadmin_num.to_i
           extract_order_information(entry_element, medication)
 
           extract_fulfillment_history(entry_element, medication)
