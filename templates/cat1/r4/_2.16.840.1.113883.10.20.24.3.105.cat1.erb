@@ -46,7 +46,9 @@
               <routeCode code="<%= entry.route['code'] %>" codeSystem="<%= entry.route['codeSystemOid'] ||HealthDataStandards::Util::CodeSystemHelper.oid_for_code_system(entry.route['code_system']||entry.route['codeSystem']) %>" sdtc:valueSet="<%= vset %>"/>
           <% end %>
         <% end -%>
-        
+        <% if entry.allowedAdministrations.present? && entry.allowedAdministrations!=0 %>
+            <repeatNumber value="<%= entry.allowedAdministrations %>" />
+        <% end %> 
         <!-- Attribute: dose -->
         <% if entry.dose.present? -%>
           <doseQuantity value="<%= entry.dose['value']%>"/>
