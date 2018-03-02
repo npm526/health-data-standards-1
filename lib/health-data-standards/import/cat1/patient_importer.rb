@@ -13,6 +13,7 @@ module HealthDataStandards
         def initialize
           # This differs from other HDS patient importers in that sections can have multiple importers
           @section_importers = {}
+          @section_importers[:assessments] = [generate_importer(CDA::ProcedureImporter, "./cda:entry/cda:observation[cda:templateId/@root = '2.16.840.1.113883.10.20.24.3.144']", '2.16.840.1.113883.10.20.28.3.117')] #assessment performed
           @section_importers[:care_goals] = [generate_importer(CDA::SectionImporter, "./cda:entry/cda:observation[cda:templateId/@root='2.16.840.1.113883.10.20.24.3.1']", '2.16.840.1.113883.3.560.1.9')] #care goal
           
           @section_importers[:conditions] = [generate_importer(GestationalAgeImporter, nil, '2.16.840.1.113883.3.560.1.1001'),
@@ -26,7 +27,7 @@ module HealthDataStandards
                                              generate_importer(ClinicalTrialParticipantImporter, nil, '2.16.840.1.113883.3.560.1.401')]
   
           
-          @section_importers[:medications] = [generate_importer(CDA::MedicationImporter, "./cda:entry/cda:act[cda:templateId/@root='2.16.840.1.113883.10.20.24.3.105']/cda:entryRelationship/cda:substanceAdministration[cda:templateId/@root='2.16.840.1.113883.10.20.24.3.41']", '2.16.840.1.113883.3.560.1.199', 'discharge'), #discharge medication active
+          @section_importers[:medications] = [generate_importer(CDA::MedicationImporter, "./cda:entry/cda:act[cda:templateId/@root='2.16.840.1.113883.10.20.24.3.105']/cda:entryRelationship/cda:substanceAdministration[cda:templateId/@root='2.16.840.1.113883.10.20.22.4.16']", '2.16.840.1.113883.3.560.1.199', 'discharge'), #discharge medication activity
                                               generate_importer(MedicationActiveImporter, nil, '2.16.840.1.113883.3.560.1.13', 'active'), #medication active
                                               generate_importer(CDA::MedicationImporter, "./cda:entry/cda:act[cda:templateId/@root = '2.16.840.1.113883.10.20.24.3.42']/cda:entryRelationship/cda:substanceAdministration[cda:templateId/@root='2.16.840.1.113883.10.20.22.4.16']", '2.16.840.1.113883.3.560.1.14', 'administered'), #medication administered
                                               generate_importer(CDA::MedicationImporter, "./cda:entry/cda:substanceAdministration[cda:templateId/@root = '2.16.840.1.113883.10.20.24.3.47']", '2.16.840.1.113883.3.560.1.17', 'ordered'), #medication order TODO: ADD NEGATON REASON HANDLING SOMEHOW
@@ -55,7 +56,7 @@ module HealthDataStandards
 
           @section_importers[:medical_equipment] = [generate_importer(CDA::MedicalEquipmentImporter, "./cda:entry/cda:procedure[cda:templateId/@root = '2.16.840.1.113883.10.20.24.3.7']", '2.16.840.1.113883.3.560.1.110', 'applied'),
                                                     generate_importer(CDA::MedicalEquipmentImporter, "./cda:entry/cda:act[cda:code/@code = 'SPLY']", '2.16.840.1.113883.3.560.1.137'),
-                                                    generate_importer(DeviceOrderImporter, nil, '2.16.840.1.113883.3.560.1.37')]
+                                                    generate_importer(DeviceOrderImporter, nil, '2.16.840.1.113883.3.560.1.37', 'ordered')]
 
           @section_importers[:results] = [generate_importer(LabOrderImporter, nil, '2.16.840.1.113883.3.560.1.50', 'ordered'), #lab ordered
                                           generate_importer(CDA::ResultImporter, "./cda:entry/cda:observation[cda:templateId/@root = '2.16.840.1.113883.10.20.24.3.38']", '2.16.840.1.113883.3.560.1.5', 'performed'), #lab performed
@@ -98,8 +99,14 @@ module HealthDataStandards
           nrh.build_id_map(doc)
           @section_importers.each do |section, entry_packages|
             entry_packages.each do |entry_package|
-              record.send(section) << entry_package.package_entries(context, nrh)
-            end
+               begin
+                record.send(section) << entry_package.package_entries(context, nrh)
+               rescue Exception => e
+                errMsg = "Failed to import Section #{section} \n Reason For Failure #{e.message}"
+                raise SectionImportError, errMsg
+                return
+              end
+           end
           end
         end
 
@@ -136,6 +143,11 @@ module HealthDataStandards
             importer = EntryPackage.new(importer_class.new, hqmf_oid, status)
           end
           importer
+        end
+      end
+      class SectionImportError < StandardError
+        def initialize(msg="Error While Importing the Record")
+          super
         end
       end
     end

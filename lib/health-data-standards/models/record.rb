@@ -112,13 +112,17 @@ class Record
   # This method may lose information because it does not compare entries
   # based on clinical content
   def dedup_section_ignoring_content!(section)
-    unique_entries = self.send(section).uniq do |entry|
-      entry.references.each do |ref|
-        ref.resolve_referenced_id
+    #TO DO Comapre Medication Orders for Duplicates
+    #Ignoring Medications because of Medication Orders Information is being lost
+    if(section.to_s != "medications")
+      unique_entries = self.send(section).uniq do |entry|
+        entry.references.each do |ref|
+          ref.resolve_referenced_id
+        end
+        entry.identifier
       end
-      entry.identifier
+      self.send("#{section}=", unique_entries)
     end
-    self.send("#{section}=", unique_entries)
   end
   def dedup_section_merging_codes_and_values!(section)
     unique_entries = {}
