@@ -7,6 +7,7 @@
     end -%>
 <% if measures.first.type == 'eh' %>
   <% if header %>
+    <% eh_program = true %>
     <% reporting_program = header.information_recipient.identifier.extension.to_s %>
     <% cms_compatibility = true %>
   <% end %>
@@ -41,7 +42,7 @@
   <!-- reported patient -->
   <%== render :partial => 'record_target', :locals => {:patient => patient, :cms_compatibility => cms_compatibility} %>
   <!-- Example of an author who is a device -->
-  <% if header && !(reporting_program == "HQR_EHR_IQR") %>
+  <% if header && !(eh_program) %>
     <%== render :partial=>"author", :collection=>header.authors %>
     <!-- SHALL have 1..* author. MAY be device or person.
       The author of the CDA document in this example is a device at a data submission vendor/registry. -->
@@ -122,7 +123,7 @@
           <!-- HQR Only -->
           <% if cms_compatibility && reporting_program == 'HQR_EHR' %>
             <id root="2.16.840.1.113883.4.336" extension="800890"/>
-	        <% elsif cms_compatibility && reporting_program == 'HQR_EHR_IQR' %>
+	        <% elsif cms_compatibility && eh_program %>
 		        <id root="2.16.840.1.113883.4.336" extension="<%= header.custodian.organization.ids[0].extension %>"/>
           <% else %>
             <id root="2.16.840.1.113883.19.5"/>
