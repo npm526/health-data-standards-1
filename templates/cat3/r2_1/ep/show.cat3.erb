@@ -81,6 +81,21 @@
     </assignedEntity>
   </legalAuthenticator>
 
+  <% if header.information_recipient.identifier.extension == "CPCPLUS" -%>
+  <!-- MAY - Location
+  EHR Certification Number, represented by SDLOC = Service Delivery Location  -->
+  <participant typeCode="LOC">
+    <associatedEntity classCode="SDLOC">
+      <!-- SHALL have at least one id, form can vary -->
+      <!-- if the EHR has an ONC certification number, SHOULD use it here -->
+      <id root="2.16.840.1.113883.3.249.5.1" extension="<%= header.participant.identifier.extension %>" assigningAuthorityName="CMS-CMMI"/>
+      <code code="394730007" displayName="healthcare related organization"
+            codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED-CT"/>
+      <%== render :partial=>"address" , :collection=>header.participant.addresses %>
+    </associatedEntity>
+  </participant>
+  <% end -%>
+
   <%== render :partial=>"providers", :locals=>{providers: header.performers, start_date: start_date, end_date: end_date} %>
 
 
