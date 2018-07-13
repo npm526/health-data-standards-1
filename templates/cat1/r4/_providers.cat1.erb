@@ -57,7 +57,9 @@
                     </assignedPerson>
                     <representedOrganization>
                       <% pp.provider.cda_identifiers.each do |cda_id| -%>
-                          <% if cda_id.root.eql?('2.16.840.1.113883.4.2') -%>
+                          <% if cda_id.extension.nil? && cda_id.root.eql?('2.16.840.1.113883.4.2') -%>
+                              <id nullFlavor="NA" root="2.16.840.1.113883.4.2"/>
+                          <% elsif cda_id.root.eql?('2.16.840.1.113883.4.2') && !cda_id.extension.nil? -%>
                               <id root="2.16.840.1.113883.4.2" extension="<%= cda_id.extension %>"/>
                           <% end -%>
                       <% end -%>
