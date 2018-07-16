@@ -126,7 +126,7 @@ module HealthDataStandards
       end
 
       def time_if_not_nil(*args)
-        args.compact.map {|t| Time.at(t).utc}.first
+        args.compact.map {|t| Time.at(t).utc.to_formatted_s(:number)}.first
       end
       
       def is_num?(str)
