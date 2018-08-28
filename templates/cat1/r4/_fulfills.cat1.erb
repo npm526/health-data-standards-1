@@ -1,7 +1,7 @@
 <% if entry.references.present? 
   -%>
   <% entry.references.each do |reference| 
-    resolved_reference = reference.resolve_reference %>
+    resolved_reference = reference.resolve_reference_section_id %>
   <% if reference.type == "fulfills" %>
   <sdtc:inFulfillmentOf1 typeCode="FLFS">
     <sdtc:templateId root="2.16.840.1.113883.10.20.24.3.126" extension="2016-08-01"/>
