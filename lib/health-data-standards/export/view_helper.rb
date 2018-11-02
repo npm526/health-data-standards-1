@@ -98,6 +98,8 @@ module HealthDataStandards
           else
             return "value='1'"
           end
+        elsif (dose['value'].present? || dose['unit'].present?)
+          return "value='#{dose['value']}' unit='#{dose['unit']}'"
         else
           return "value='#{dose['scalar']}' unit='#{dose['units']}'"
         end
