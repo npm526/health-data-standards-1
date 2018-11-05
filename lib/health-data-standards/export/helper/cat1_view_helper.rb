@@ -26,7 +26,7 @@ module HealthDataStandards
           data_criteria_html = udcs.map do |udc|
             # If there's an error exporting particular criteria, re-raise an error that includes useful debugging info
             begin
-              entries = entries_for_data_criteria(udc['data_criteria'], patient)
+              entries = entries_for_data_criteria(udc['data_criteria'], patient, udc)
               render_data_criteria(udc, entries, r2_compatibility, qrda_version)
             rescue => e
               raise HealthDataStandards::Export::PatientExportDataCriteriaException.new(e.message, patient, udc['data_criteria'], entries)
